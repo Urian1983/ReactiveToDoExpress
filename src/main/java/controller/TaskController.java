@@ -2,6 +2,7 @@ package controller;
 
 import dto.TaskRequest;
 import dto.TaskResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -20,7 +21,7 @@ public class TaskController {
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<TaskResponse> createTask(@RequestBody TaskRequest taskRequest){
+    public Mono<TaskResponse> createTask(@Valid @RequestBody TaskRequest taskRequest){
         return service.createTask(taskRequest);
     }
 
@@ -36,7 +37,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{id}")
-    public Mono<TaskResponse> updateTask(@RequestBody TaskRequest taskRequest, @PathVariable Long id){
+    public Mono<TaskResponse> updateTask(@Valid @RequestBody TaskRequest taskRequest, @PathVariable Long id){
         return service.updateTask(id, taskRequest);
     }
 

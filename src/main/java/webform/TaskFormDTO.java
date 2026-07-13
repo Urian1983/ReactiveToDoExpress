@@ -7,14 +7,52 @@ import model.TaskPriority;
 import model.TaskStatus;
 
 @Hidden
-public record TaskFormDTO(Long id,
+public class TaskFormDTO {
 
-                          @NotBlank(message = "La descripción no puede estar vacía")
-                          String description,
+    private Long id;
 
-                          @NotNull(message = "Selecciona una prioridad")
-                          TaskPriority priority,
+    @NotBlank(message = "La descripción no puede estar vacía")
+    private String description;
 
-                          @NotNull(message = "Selecciona un estado")
-                          TaskStatus status) {
+    @NotNull(message = "Selecciona una prioridad")
+    private TaskPriority priority;
+
+    @NotNull(message = "Selecciona un estado")
+    private TaskStatus status;
+
+    public TaskFormDTO() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public TaskPriority getPriority() {
+        return priority;
+    }
+
+    public void setPriority(TaskPriority priority) {
+        this.priority = priority;
+    }
+
+    public TaskStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskStatus status) {
+        this.status = status;
+    }
 }
+

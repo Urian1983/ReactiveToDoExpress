@@ -6,10 +6,41 @@ import jakarta.validation.constraints.NotNull;
 import model.LogLevel;
 
 @Hidden
-public record AuditFormDTO (@NotNull(message = "Selecciona un nivel")
-                             LogLevel level,
-                             @NotNull(message = "Indica el ID de la tarea asociada")
-                             Long taskId,
-                             @NotBlank(message = "El mensaje no puede estar vacío")
-                             String message)
-{ }
+public class AuditFormDTO {
+
+    @NotNull(message = "Selecciona un nivel")
+    private LogLevel level;
+
+    @NotNull(message = "Indica el ID de la tarea asociada")
+    private Long taskId;
+
+    @NotBlank(message = "El mensaje no puede estar vacío")
+    private String message;
+
+    public AuditFormDTO() {
+    }
+
+    public LogLevel getLevel() {
+        return level;
+    }
+
+    public void setLevel(LogLevel level) {
+        this.level = level;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}

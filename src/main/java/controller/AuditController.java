@@ -25,7 +25,7 @@ public class AuditController {
     }
 
     @GetMapping("/audits/{id}")
-    public Mono<AuditResponse> getAuditsById(@Valid @PathVariable Long id) {
+    public Mono<AuditResponse> getAuditsById(@PathVariable Long id) {
         return service.getAuditById(id);
     }
 
