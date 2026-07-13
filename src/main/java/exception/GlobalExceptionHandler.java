@@ -20,9 +20,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Mono<ResponseEntity<ErrorResponseDTO>> handleException(Exception ex) {
-        // auditRepository.save(...) devuelve un Mono: no ejecuta la escritura hasta
-        // que alguien se suscribe. Al devolver el Mono encadenado, es el propio
-        // WebFlux quien se suscribe al procesar la respuesta, así el guardado sí ocurre.
         return auditRepository.save(new Audit(LogLevel.ERROR, 0L, ex.getMessage()))
                 .thenReturn(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body(new ErrorResponseDTO(ex.getMessage())));
