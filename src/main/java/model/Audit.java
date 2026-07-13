@@ -1,5 +1,6 @@
 package model;
 
+import lombok.EqualsAndHashCode;
 import org.springframework.data.annotation.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,8 +13,10 @@ import java.time.LocalDateTime;
 @Table("audit")
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Audit {
     @Id
+    @EqualsAndHashCode.Include
     private Long id;
     private LogLevel level;
     private Long taskId;

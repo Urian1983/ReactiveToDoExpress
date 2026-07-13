@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Task {
     @Id
+    @EqualsAndHashCode.Include
     private Long id;
     private String description;
     private TaskPriority priority;
