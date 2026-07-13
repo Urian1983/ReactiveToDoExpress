@@ -31,6 +31,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Mono<TaskResponse> createTask(TaskRequest newTask) {
         Task newTaskEntity = mapper.toEntity(newTask);
+        newTaskEntity.setCreatedAt(LocalDateTime.now());
+        newTaskEntity.setUpdatedAt(LocalDateTime.now());
         return repository.save(newTaskEntity)
                 .flatMap(taskSaved -> {
                     Audit audit = new Audit(LogLevel.INFO, taskSaved.getId(), "Task created " + taskSaved.getDescription());
@@ -85,7 +87,6 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Flux<TaskResponse> getAllTasks() {
         return repository.findAll()
-                .switchIfEmpty(Mono.error(() -> new NotFoundException("No tasks found")))
                 .map(mapper::toResponse);
     }
 

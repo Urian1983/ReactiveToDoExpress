@@ -38,7 +38,6 @@ public class AuditServiceImpl implements AuditService {
     @Override
     public Flux<AuditResponse> getAllAudits() {
         return auditRepository.findAll()
-                .switchIfEmpty(Mono.error(() -> new NotFoundException("No audits found")))
                 .map(auditMapper::toResponse);
     }
 }
