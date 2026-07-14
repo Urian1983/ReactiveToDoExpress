@@ -1,8 +1,8 @@
 # 📝 ReactiveToDoExpress
 
-Este proyecto de porfolio es una versión híbrida y reactiva de ToDoExpress. Consiste en una API REST completamente **reactiva y no bloqueante** para la gestión de tareas con auditoría integrada, construida sobre **Spring Boot 3**, **Java 21** y **Spring Data R2DBC**. Además, incluye una interfaz web clásica construida con **Thymeleaf (implementado de forma tradicional/bloqueante)** para facilitar el binding de formularios y la renderización de plantillas, y soporte de documentación interactiva con **Swagger** y **Postman**.
+Este proyecto de porfolio es una versión híbrida y reactiva de ToDoExpress. Consiste en una API REST completamente **reactiva y no bloqueante** para la gestión de tareas con auditoría integrada, construida sobre **Spring Boot 3**, **Java 21** y **Spring Data R2DBC**. Además, incluye una interfaz web construida con **Thymeleaf**, íntegramente reactiva también (sin bloquear ningún hilo en ningún punto del flujo), con soporte de documentación interactiva mediante **Swagger** y **Postman**.
 
-El backend está diseñado para demostrar cómo convive un núcleo asíncrono y reactivo (`Mono`/`Flux`) con consumidores tanto reactivos (la API REST) como síncronos/bloqueantes (las vistas de usuario).
+El backend está diseñado para demostrar un núcleo asíncrono y reactivo (`Mono`/`Flux`) de punta a punta: tanto la API REST como las vistas HTML comparten la misma capa de servicio reactiva, y ninguna de las dos bloquea el pool de hilos de Netty en ningún momento.
 
 ---
 
@@ -14,7 +14,7 @@ El backend está diseñado para demostrar cómo convive un núcleo asíncrono y 
 | Spring Boot | 3.5.14 | — |
 | Spring Data R2DBC | — | Reactivo (No bloqueante) |
 | Spring WebFlux (API) | — | Reactivo (No bloqueante) |
-| Spring MVC + Thymeleaf (Web) | — | Tradicional (Bloqueante) |
+| Spring WebFlux + Thymeleaf (Web y API) | — | Reactivo (No bloqueante) |
 | Springdoc OpenAPI (Swagger UI) | 2.x | — |
 | MapStruct | 1.5.5.Final | — |
 | Lombok | — | — |
@@ -24,9 +24,9 @@ El backend está diseñado para demostrar cómo convive un núcleo asíncrono y 
 
 ---
 
-## 🖥️ Interfaz web (Síncrona/Bloqueante)
+## 🖥️ Interfaz web (Reactiva, no bloqueante)
 
-A diferencia de la API REST, la interfaz web está construida utilizando **Thymeleaf de forma síncrona y bloqueante**. Esto permite simplificar el ciclo de vida de las vistas HTML, facilitando el binding directo de los formularios (`TaskFormDTO`, `AuditFormDTO`) y manteniendo una arquitectura web robusta y familiar.
+La interfaz web usa **Thymeleaf** exactamente igual que la API REST: de forma completamente reactiva. Los controladores de vista (`@Controller`) devuelven `Mono<String>` y encadenan la capa de servicio reactiva (`.map()`, `.thenReturn()`...) en vez de bloquear con `.block()` — así ningún hilo del pool de Netty queda parado esperando a la base de datos, ni siquiera al renderizar HTML.
 
 | Página | Ruta |
 |---|---|
@@ -36,7 +36,7 @@ A diferencia de la API REST, la interfaz web está construida utilizando **Thyme
 | Listado de auditoría | `/audits` |
 | Nuevo registro de auditoría | `/audits/new` |
 
-Los controladores de vista (`@Controller`) consumen la capa de servicio reactiva bloqueando o adaptando los flujos mediante `.block()` (o resolviéndolos síncronamente) para poder renderizar las plantillas de Thymeleaf antes de enviar la respuesta al navegador.
+La interfaz web y la API REST comparten la misma capa de servicio (`TaskService`, `AuditService`): los controladores de vista y los `@RestController` son solo dos puertas de entrada distintas a la misma lógica de negocio reactiva.
 
 ---
 
