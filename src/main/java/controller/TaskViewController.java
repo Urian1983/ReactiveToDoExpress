@@ -24,7 +24,7 @@ public class TaskViewController {
     }
 
     @GetMapping
-    public Mono<String> list(Model model) {.
+    public Mono<String> list(Model model) {
         return service.getAllTasks()
                 .collectList()
                 .doOnNext(tasks -> model.addAttribute("tasks", tasks))
