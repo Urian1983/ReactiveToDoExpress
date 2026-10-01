@@ -32,10 +32,6 @@ dependencies {
     // Swagger / OpenAPI (ya lo tenías)
     implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.8.14'
 
-    // Thymeleaf — funciona en modo reactivo automáticamente al detectar WebFlux
-    // en el classpath (no hace falta ninguna dependencia extra de "reactive").
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
     // MapStruct
     implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 

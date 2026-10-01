@@ -1,0 +1,93 @@
+package urian1983.reactivetodoexpress.service;
+
+import urian1983.reactivetodoexpress.dto.TaskRequest;
+import urian1983.reactivetodoexpress.dto.TaskResponse;
+import urian1983.reactivetodoexpress.exception.NotFoundException;
+import urian1983.reactivetodoexpress.mapper.TaskMapper;
+import urian1983.reactivetodoexpress.model.Audit;
+import urian1983.reactivetodoexpress.model.LogLevel;
+import urian1983.reactivetodoexpress.model.Task;
+import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import urian1983.reactivetodoexpress.repository.AuditRepository;
+import urian1983.reactivetodoexpress.repository.TaskRepository;
+
+import java.time.LocalDateTime;
+
+@Service
+public class TaskServiceImpl implements TaskService {
+
+    private final TaskRepository repository;
+    private final TaskMapper mapper;
+    private final AuditRepository auditRepository;
+
+    public TaskServiceImpl(TaskRepository repository, TaskMapper mapper, AuditRepository auditRepository) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.auditRepository = auditRepository;
+    }
+
+    @Override
+    public Mono<TaskResponse> createTask(TaskRequest newTask) {
+        Task newTaskEntity = mapper.toEntity(newTask);
+        newTaskEntity.setCreatedAt(LocalDateTime.now());
+        newTaskEntity.setUpdatedAt(LocalDateTime.now());
+        return repository.save(newTaskEntity)
+                .flatMap(taskSaved -> {
+                    Audit audit = new Audit(LogLevel.INFO, taskSaved.getId(), "Task created " + taskSaved.getDescription());
+                    return auditRepository.save(audit).thenReturn(taskSaved);
+                })
+                .map(taskSaved -> mapper.toResponse(taskSaved));
+
+
+    }
+
+    @Override
+    public Mono<TaskResponse> updateTask(Long id, TaskRequest updateTask) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(() -> new NotFoundException("Task Not Found")))
+                .map(taskToUpdate -> {
+                    taskToUpdate.setDescription(updateTask.description());
+                    taskToUpdate.setPriority(updateTask.priority());
+                    taskToUpdate.setStatus(updateTask.status());
+                    taskToUpdate.setUpdatedAt(LocalDateTime.now());
+                    return taskToUpdate;
+                })
+                .flatMap(taskSaved -> repository.save(taskSaved))
+                .flatMap(taskSaved -> {
+                    Audit audit = new Audit(
+                            LogLevel.INFO,
+                            taskSaved.getId(),
+                            "Task updated " + taskSaved.getDescription()
+                    );
+                    return auditRepository.save(audit)
+                            .thenReturn(taskSaved);
+                })
+                .map(taskSaved -> mapper.toResponse(taskSaved));
+    }
+
+
+
+    @Override
+    public Mono<Void> deleteTask(Long id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(() -> new NotFoundException("Task with id " + id + " not found")))
+                .flatMap(taskSaved -> repository.deleteById(id));
+
+    }
+
+    @Override
+    public Mono<TaskResponse> getTaskById(Long id) {
+        return repository.findById(id)
+                .switchIfEmpty(Mono.error(() -> new NotFoundException("Task with id " + id + " not found")))
+                .map(mapper::toResponse);
+    }
+
+    @Override
+    public Flux<TaskResponse> getAllTasks() {
+        return repository.findAll()
+                .map(mapper::toResponse);
+    }
+
+}

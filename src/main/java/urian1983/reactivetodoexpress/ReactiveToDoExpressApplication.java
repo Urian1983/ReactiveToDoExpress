@@ -2,11 +2,12 @@ package urian1983.reactivetodoexpress;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@@ComponentScan(basePackages = {
+@ComponentScan(basePackages = {
         "urian1983.reactivetodoexpress",
-        "controller", "service", "repository", "exception", "mapper", "webform", "config"
+        "controller", "service", "repository", "exception", "mapper", "config"
 })    
 public class ReactiveToDoExpressApplication {
 
